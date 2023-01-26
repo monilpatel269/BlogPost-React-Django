@@ -4,6 +4,9 @@
   padding: 20px;
   min-height: 100vh;
 }
+.hrclass{
+  color: #61dafb;
+}
 
 .App-link {
   color: #61dafb;
