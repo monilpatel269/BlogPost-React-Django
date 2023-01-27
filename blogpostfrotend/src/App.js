@@ -2,19 +2,22 @@ import './App.css';
 import ArticleList from './components/ArticleList';
 import { useState, useEffect } from 'react';
 import Form from './components/Form';
+import { useNavigate } from 'react-router-dom';
+import { useCookies } from 'react-cookie';
 
 const App = () => {
 
-  const auth_token = process.env.REACT_APP_BACKEND_AUTH_TOKEN;
+  const [token, setToken, removeToken] = useCookies(['mytoken']);
   const [articles, setArticles] = useState([]);
   const [editArticle, setEditArticle] = useState(null);
+  let navigate = useNavigate();
 
   useEffect(() => {
     fetch('http://127.0.0.1:8000/api/articles/', {
       'method': 'GET',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': auth_token,
+        'Authorization': `Token ${token['mytoken']}`,
       }
     })
       .then(resp => resp.json())
@@ -28,11 +31,11 @@ const App = () => {
   }
 
   const deletBtn = (article) => {
-    const new_article = articles.filter(myarticle =>{
-      if(myarticle.id===article.id){
+    const new_article = articles.filter(myarticle => {
+      if (myarticle.id === article.id) {
         return false
       }
-      else{
+      else {
         return true
       }
     })
@@ -63,6 +66,11 @@ const App = () => {
     setEditArticle(null);
   }
 
+  const logoutBtn = () => {
+    removeToken(['mytoken']);
+    navigate('/');
+  }
+
   return (
     <>
       <div className="App">
@@ -74,10 +82,14 @@ const App = () => {
             <div className='col'>
               <button onClick={articleForm} className='btn btn-success btn-sm'>Add Article</button>
             </div>
+
+            <div className='col'>
+              <button onClick={logoutBtn} className='btn btn-success btn-sm'>Logout</button>
+            </div>
           </div>
 
-          <ArticleList articles={articles} editBtn={editBtn} deletBtn={deletBtn} auth_token={auth_token} />
-          {editArticle ? <Form article={editArticle} updatedInfo={updatedInfo} insertedInfo={insertedInfo} auth_token={auth_token} /> : null}
+          <ArticleList articles={articles} editBtn={editBtn} deletBtn={deletBtn} />
+          {editArticle ? <Form article={editArticle} updatedInfo={updatedInfo} insertedInfo={insertedInfo} /> : null}
 
         </div>
       </div>

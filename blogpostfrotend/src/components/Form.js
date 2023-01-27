@@ -1,18 +1,20 @@
 import React, { useState, useEffect } from 'react'
 import APIService from '../APIService';
+import { useCookies } from 'react-cookie';
 
 
 function Form(props) {
     const [title, setTitle] = useState(props.article.title);
     const [description, setDescription] = useState(props.article.description);
+    const [token] = useCookies(['mytoken']);
 
     const updateArticle = () => {
-        APIService.UpdateArticle(props.article.id, props.auth_token, { title, description })
+        APIService.UpdateArticle(props.article.id, token['mytoken'], { title, description })
             .then(resp => props.updatedInfo(resp))
     }
 
     const insertArticle = () => {
-        APIService.InsertArticle(props.auth_token, { title, description })
+        APIService.InsertArticle(token['mytoken'], { title, description })
             .then(resp => props.insertedInfo(resp))
     }
 
