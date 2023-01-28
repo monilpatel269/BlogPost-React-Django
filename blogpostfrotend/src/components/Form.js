@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react'
 import APIService from '../APIService';
 import { useCookies } from 'react-cookie';
+import { useNavigate } from 'react-router-dom';
 
 
 function Form(props) {
+    let navigate = useNavigate();
     const [title, setTitle] = useState(props.article.title);
     const [description, setDescription] = useState(props.article.description);
     const [token] = useCookies(['mytoken']);
@@ -11,6 +13,7 @@ function Form(props) {
     const updateArticle = () => {
         APIService.UpdateArticle(props.article.id, token['mytoken'], { title, description })
             .then(resp => props.updatedInfo(resp))
+        props.showBtns(true);
     }
 
     const insertArticle = () => {
